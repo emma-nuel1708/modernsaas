@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
               name: "UptimeHero Pro Plan",
               description: "Monitor up to 20 websites with 1-minute checks, SMS & Slack alerts.",
             },
-            unit_amount: 1500, // $15.00
+            unit_amount: 1500,
             recurring: {
               interval: "month",
             },
@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error: any) {
-    console.error("Stripe checkout error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Checkout failed";
+    console.error("Stripe checkout error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

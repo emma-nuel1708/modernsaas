@@ -11,9 +11,10 @@ import { LogIn } from "lucide-react";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle, signInWithEmail, user, loading } = useAuth();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
@@ -23,32 +24,46 @@ export default function LoginPage() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
     try {
       await signInWithEmail(email, password);
-      // User will be redirected by useEffect
-    } catch (error) {
-      // Error is handled by alert in context
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="h-12 w-12 bg-blue-600 rounded-xl flex items-center justify-center">
-             <LogIn className="text-white w-6 h-6" />
+            <LogIn className="text-white w-6 h-6" />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
           Sign in to your account
         </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white dark:bg-gray-900 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-transparent dark:border-gray-800">
+          {error && (
+            <div className="mb-4 rounded-md bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+              {error}
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleEmailLogin}>
             <Input
               label="Email address"
@@ -64,39 +79,41 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
-            <div>
-              <Button type="submit" className="w-full" isLoading={isLoading}>
-                Sign in
-              </Button>
-            </div>
+            <Button type="submit" className="w-full" isLoading={isLoading}>
+              Sign in
+            </Button>
           </form>
 
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-300 dark:border-gray-700" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">
                   Or continue with
                 </span>
               </div>
             </div>
-
             <div className="mt-6">
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={signInWithGoogle}
+                onClick={handleGoogleLogin}
               >
                 Google
               </Button>
             </div>
           </div>
-          
-          <div className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account? <Link href="/signup" className="text-blue-600 font-medium hover:underline">Sign up</Link>
+
+          <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+            >
+              Sign up
+            </Link>
           </div>
         </div>
       </div>
