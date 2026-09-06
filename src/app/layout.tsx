@@ -6,8 +6,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Modern SaaS",
-  description: "A modern SaaS application template",
+  title: "UptimeHero - Website Uptime Monitoring",
+  description: "Monitor your websites and APIs. Get instant alerts when something goes down.",
 };
 
 export default function RootLayout({

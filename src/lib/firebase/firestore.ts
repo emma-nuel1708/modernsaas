@@ -10,51 +10,55 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 
-export interface Project {
+export interface Monitor {
   id: string;
   name: string;
-  description: string;
+  url: string;
   userId: string;
+  status: "up" | "down" | "pending";
+  lastChecked: any;
   createdAt: any;
 }
 
-const PROJECTS_COLLECTION = "projects";
+const MONITORS_COLLECTION = "monitors";
 
-export const createProject = async (name: string, description: string, userId: string) => {
+export const createMonitor = async (name: string, url: string, userId: string) => {
   try {
-    const docRef = await addDoc(collection(db, PROJECTS_COLLECTION), {
+    const docRef = await addDoc(collection(db, MONITORS_COLLECTION), {
       name,
-      description,
+      url,
       userId,
+      status: "pending",
+      lastChecked: null,
       createdAt: serverTimestamp()
     });
     return docRef.id;
   } catch (error) {
-    console.error("Error adding project: ", error);
+    console.error("Error adding monitor: ", error);
     throw error;
   }
 };
 
-export const getProjectsForUser = async (userId: string): Promise<Project[]> => {
+export const getMonitorsForUser = async (userId: string): Promise<Monitor[]> => {
   try {
-    const q = query(collection(db, PROJECTS_COLLECTION), where("userId", "==", userId));
+    const q = query(collection(db, MONITORS_COLLECTION), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    const projects: Project[] = [];
+    const monitors: Monitor[] = [];
     querySnapshot.forEach((doc) => {
-      projects.push({ id: doc.id, ...doc.data() } as Project);
+      monitors.push({ id: doc.id, ...doc.data() } as Monitor);
     });
-    return projects;
+    return monitors;
   } catch (error) {
-    console.error("Error getting projects: ", error);
+    console.error("Error getting monitors: ", error);
     throw error;
   }
 };
 
-export const deleteProject = async (projectId: string) => {
+export const deleteMonitor = async (monitorId: string) => {
   try {
-    await deleteDoc(doc(db, PROJECTS_COLLECTION, projectId));
+    await deleteDoc(doc(db, MONITORS_COLLECTION, monitorId));
   } catch (error) {
-    console.error("Error deleting project: ", error);
+    console.error("Error deleting monitor: ", error);
     throw error;
   }
 };

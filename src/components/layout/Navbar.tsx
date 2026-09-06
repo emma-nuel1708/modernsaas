@@ -13,7 +13,7 @@ export const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-xl font-bold text-blue-600">
-              ModernSaaS
+              UptimeHero
             </Link>
           </div>
           
